@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import {styled, useTheme, Theme, CSSObject} from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,10 +18,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from '../../redux/store';
 import {addFolderAC, FolderType} from '../../reducers/folderReducer';
 import MuiListItem from '../listItem/ListItem';
-import { AddItemForm } from '../../common/addItemForm/AddItemForm';
-import {useCallback} from 'react';
-import { v1 } from 'uuid';
-import {Grid, Paper} from '@mui/material';
+import {AddItemForm} from '../../common/addItemForm/AddItemForm';
+import {useCallback, useEffect, useState} from 'react';
+import {v1} from 'uuid';
+import {Grid, ListItemIcon, Paper} from '@mui/material';
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+import {ErrorSnackbar} from '../errorSnackbar/ErrorSnackbar';
 
 const drawerWidth = 240;
 
@@ -46,7 +48,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     },
 });
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -61,7 +63,7 @@ interface AppBarProps extends MuiAppBarProps {
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
+})<AppBarProps>(({theme, open}) => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
@@ -77,8 +79,8 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
+const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})(
+    ({theme, open}) => ({
         width: drawerWidth,
         flexShrink: 0,
         whiteSpace: 'nowrap',
@@ -97,7 +99,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [select, setSelect] = useState('all')
     const folders = useSelector<AppRootStateType, FolderType[]>(state => state.folders)
+    const [error, setError] = useState('')
+    const [foldersForRender, setFoldersForRender] = useState(folders)
     const dispatch = useDispatch()
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -108,12 +113,30 @@ export default function MiniDrawer() {
     };
 
     const addFolder = useCallback((title: string) => {
-        dispatch(addFolderAC({id: v1(), title, filter: 'all'}))
+        const newFolder: FolderType = {id: v1(), title, filter: 'all'}
+        dispatch(addFolderAC(newFolder))
+        setSelect(newFolder.id)
     }, [dispatch])
 
+    const onFolderSelect = (id: string) => {
+        setSelect(id)
+    }
+
+    const onSearchSelect = (value: string) => {
+        const searchingFolders = folders.filter(el => el.title.includes(value))
+        searchingFolders.length > 0 ? setFoldersForRender(searchingFolders) : setError('No match!')
+    }
+    useEffect(()=>{
+        if(select !== 'all') {
+            setFoldersForRender(folders.filter(el => el.id === select))
+
+        } else {
+            setFoldersForRender(folders)
+        }
+    },[select])
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
+        <Box sx={{display: 'flex'}}>
+            <CssBaseline/>
             <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
@@ -123,44 +146,66 @@ export default function MiniDrawer() {
                         edge="start"
                         sx={{
                             marginRight: 5,
-                            ...(open && { display: 'none' }),
+                            ...(open && {display: 'none'}),
                         }}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        <SearchAppBar/>
+                        <SearchAppBar search={onSearchSelect}/>
                     </Typography>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        {theme.direction === 'rtl' ? <ChevronRightIcon/> : <ChevronLeftIcon/>}
                     </IconButton>
                 </DrawerHeader>
-                <Divider />
-                {open ? <><AddItemForm calBack={addFolder}/>
-                <Divider /></> : ''}
+                <Divider/>
+                {open ? <>
+                    <AddItemForm calBack={addFolder}/>
+                    <Divider/>
+                </> : ''}
+                <ListItemIcon
+                    onClick={() => onFolderSelect('all')}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: 90,
+                        minWidth: 0,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                    <SelfImprovementIcon/>
+                    All
+                </ListItemIcon>
+                <Divider/>
                 <List>
-                    {folders.map((el, index) => (
-                        <MuiListItem text={el.title} open={open}/>
+                    {folders.map(el => (
+                        <MuiListItem key={el.id + el.title} id={el.id} select={onFolderSelect} text={el.title}
+                                     open={open}/>
                     ))}
                 </List>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <DrawerHeader />
-                <Grid container spacing={1}>
-                    {folders.length && folders.map((t) => {
+            <Box component="main" sx={{flexGrow: 1, p: 3}}>
+                <DrawerHeader/>
+                <Grid style={{ display: 'flex',
+                    alignContent: 'center',
+                    justifyContent: 'center' }} container spacing={1}>
+                    {foldersForRender.length && foldersForRender.map((t) => {
                         return (<Grid key={t.id} item style={{margin: '10px'}}>
                             <Paper style={{backgroundColor: '#6495ed3b'}}>
                                 <Folder
+                                    clearSelect={onFolderSelect}
                                     filter={t.filter}
                                     id={t.id}
                                     title={t.title}
                                 /></Paper></Grid>)
+
                     })}
                 </Grid>
+                <ErrorSnackbar error={error} setError={setError}/>
             </Box>
         </Box>
     );

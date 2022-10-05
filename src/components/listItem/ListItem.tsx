@@ -1,18 +1,23 @@
 import React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ListItemText from '@mui/material/ListItemText';
 import ListItem from '@mui/material/ListItem';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 type MuiListItemPropsType = {
+    id: string
     text: string
     open: boolean
+    select: (id: string) => void
 }
 
-const MuiListItem = ({text, open}: MuiListItemPropsType) => {
+const MuiListItem = ({text, open, select, id}: MuiListItemPropsType) => {
+    const onClickHandler = () => {
+        select(id)
+    }
     return (
-        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+        <ListItem onClick={onClickHandler} key={text} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
                 sx={{
                     minHeight: 48,
@@ -21,13 +26,14 @@ const MuiListItem = ({text, open}: MuiListItemPropsType) => {
                 }}
             >
                 <ListItemIcon
+
                     sx={{
                         minWidth: 0,
                         mr: open ? 3 : 'auto',
                         justifyContent: 'center',
                     }}
                 >
-                    <InboxIcon />
+                    <AssignmentIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>

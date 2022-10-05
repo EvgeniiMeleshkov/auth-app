@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import MiniDrawer from './components/sidebar/MuiSidebar';
+import MiniDrawer from './components/main/Main';
 
 function App() {
   return (

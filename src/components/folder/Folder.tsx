@@ -1,6 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {addTaskAC, TasksStateType, TaskType} from '../../reducers/tasksReducer';
+import {addTaskAC, TasksStateType} from '../../reducers/tasksReducer';
 import {Delete} from '@mui/icons-material';
 import {Button, ButtonGroup, IconButton} from '@mui/material';
 import {AppRootStateType} from '../../redux/store';
@@ -16,12 +16,11 @@ import {AddItemForm} from '../../common/addItemForm/AddItemForm';
 import {Task} from '../task/Task';
 import {SpanInput} from '../../common/SpanInput/SpanInput';
 
-type FolderPropsType = FolderType
+type FolderPropsType = FolderType & {clearSelect : (id: string)=>void}
 
-export const Folder = memo(({id, filter, title}: FolderPropsType) => {
+export const Folder = memo(({id, filter, title, clearSelect}: FolderPropsType) => {
     const dispatch = useDispatch()
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
-
 //-------------------FILTER---------------------------
     const tasksForRender = filter === 'completed'
         ? tasks[id].filter(el => el.status === TaskStatuses.Completed)
@@ -33,6 +32,7 @@ export const Folder = memo(({id, filter, title}: FolderPropsType) => {
 
     const onDeleteFolderHandler = useCallback(() => {
         dispatch(removeFolderAC(id))
+        clearSelect('all')
     }, [dispatch, id])
 
     const changeFolderTitle = useCallback((folderId: string, title: string) => {
@@ -45,7 +45,6 @@ export const Folder = memo(({id, filter, title}: FolderPropsType) => {
     }, [id, dispatch]);
 
     const onChangeFilter = useCallback( (filter: FilterValuesType) => {
-        debugger
         dispatch(changeFolderFilterAC(id, filter))
     }, [dispatch, id])
 
@@ -57,7 +56,7 @@ export const Folder = memo(({id, filter, title}: FolderPropsType) => {
 
 
     return (
-        <div style={{width: '220px', marginTop: '1rem'}}>
+        <div style={{marginTop: '1rem'}}>
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -78,7 +77,7 @@ export const Folder = memo(({id, filter, title}: FolderPropsType) => {
             <ul style={{padding: '0'}}>
                 {mappedTasks}
             </ul>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
+            <div style={{display: 'flex', width: 'border-box', justifyContent: 'center'}}>
                 <ButtonGroup variant="text" aria-label="text button group">
                     <Button size={'small'} variant={filter === 'all' ? 'contained' : 'outlined'} color={'warning'}
                             onClick={() => onChangeFilter('all')}>All</Button>
