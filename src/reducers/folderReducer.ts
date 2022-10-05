@@ -26,8 +26,8 @@ export type FoldersActionsType = RemoveFolderActionType | AddFolderActionType
     | ChangeFolderFilterActionType
 
 const initialState: Array<FolderType> = [
-    /*{id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
-    {id: todolistId2, title: 'What to buy', filter: 'all', addedDate: '', order: 0}*/
+    {id: '1', title: 'What to learn', filter: 'all'},
+    {id: '2', title: 'What to buy', filter: 'all'}
 ]
 
 export type FilterValuesType = 'all' | 'active' | 'completed';
@@ -44,7 +44,6 @@ export const foldersReducer = (state: Array<FolderType> = initialState, action: 
         case 'CHANGE-FOLDER-TITLE': {
             const folder = state.find(tl => tl.id === action.id);
             if (folder) {
-                // если нашёлся - изменим ему заголовок
                 folder.title = action.title;
             }
             return [...state]
@@ -52,7 +51,6 @@ export const foldersReducer = (state: Array<FolderType> = initialState, action: 
         case 'CHANGE-FOLDER-FILTER': {
             const folder = state.find(tl => tl.id === action.id);
             if (folder) {
-                // если нашёлся - изменим ему заголовок
                 folder.filter = action.filter;
             }
             return [...state]
