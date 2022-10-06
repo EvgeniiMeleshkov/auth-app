@@ -54,7 +54,10 @@ export default function SearchAppBar({search}: SearchAppBarPropsType) {
         search(value)
     }
     const onEnterPressed = (event: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        event.key === 'Enter' && onSearchHandler()
+        if(event.key === 'Enter') {
+            onSearchHandler()
+            setValue('')
+        }
     }
     return (
         <Box sx={{flexGrow: 1}}>
