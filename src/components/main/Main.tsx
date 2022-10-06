@@ -99,7 +99,7 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
 export default function Main() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    const [error, setError] = useState('')
+    let error = ''
     const [select, setSelect] = useState('all')
     const [searchValue, setSearchValue] = useState('')
     const folders = useSelector<AppRootStateType, FolderType[]>(state => state.folders)
@@ -135,7 +135,7 @@ export default function Main() {
     } else if(searchingFolders.length > 0) {
         foldersForRender = searchingFolders
     } else {
-        setError('No match!')
+        error = 'No match!'
     }
 
     return (
@@ -208,7 +208,7 @@ export default function Main() {
                                 /></Paper></Grid>)
                     })}
                 </Grid>
-                <ErrorSnackbar error={error} setError={setError}/>
+                <ErrorSnackbar error={error}/>
             </Box>
         </Box>
     );

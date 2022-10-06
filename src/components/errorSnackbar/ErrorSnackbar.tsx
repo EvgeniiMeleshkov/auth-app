@@ -5,7 +5,6 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 type ErrorSnackbarPropsType = {
     error: string
-    setError: (err: string) => void
 }
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -15,7 +14,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export function ErrorSnackbar({error, setError}: ErrorSnackbarPropsType) {
+export function ErrorSnackbar({error}: ErrorSnackbarPropsType) {
 
     const isOpen = error !== ''
 
@@ -23,7 +22,7 @@ export function ErrorSnackbar({error, setError}: ErrorSnackbarPropsType) {
         if (reason === 'clickaway') {
             return;
         }
-        setError('')
+        error = ''
     };
 
 
