@@ -123,6 +123,7 @@ export default function Main() {
 
     const onFolderSelect = (id: string) => {
         setSelect(id)
+        setSearchValue('')
     }
 
     const onSearchSelect = (value: string) => {
