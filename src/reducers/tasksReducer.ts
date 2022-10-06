@@ -48,7 +48,6 @@ export type TasksActionsType = RemoveTaskActionType | AddTaskActionType
     | ChangeTaskTitleActionType
     | AddFolderActionType
     | RemoveFolderActionType
-    // | ReturnType<typeof setTasksAC>
 
 
 const initialState: TasksStateType = {
@@ -81,13 +80,6 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Tasks
             };
         }
         case 'CHANGE-TASK-TITLE': {
-            // let folderTasks = state[action.folderId];
-            // // найдём нужную таску:
-            // let newTasksArray = folderTasks
-            //     .map(t => t.id === action.taskId ? {...t, title: action.title} : t);
-            //
-            // state[action.folderId] = newTasksArray;
-            // return ({...state});
             return {...state, [action.folderId]: state[action.folderId].map(t => t.id === action.taskId ? {...t, title: action.title} : t)}
         }
         case 'ADD-FOLDER': {
@@ -98,18 +90,9 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Tasks
         }
         case 'REMOVE-FOLDER': {
             const copyState = {...state};
-            delete copyState[action.id];
+            delete copyState[action.folderId];
             return copyState;
         }
-        // case 'SET_TODOLISTS':
-        //     const copy = {...state}
-        //     action.todolists.forEach((el) => {
-        //         copy[el.id] = []
-        //     })
-        //     return copy
-        // case 'SET_TASKS':
-        //     return {...state, [action.folderId]: action.task}
-
         default:
             return state;
     }
@@ -127,5 +110,5 @@ export const updateTaskAC = (taskId: string, status: TaskStatuses, folderId: str
 export const changeTaskTitleAC = (taskId: string, title: string, folderId: string): ChangeTaskTitleActionType => {
     return {type: 'CHANGE-TASK-TITLE', title, folderId, taskId}
 }
-//export const setTasksAC = (folderId: string, task: TaskType[]) => ({type: 'SET_TASKS', folderId, task} as const)
+
 

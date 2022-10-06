@@ -19,7 +19,7 @@ import {AppRootStateType} from '../../redux/store';
 import {addFolderAC, FolderType} from '../../reducers/folderReducer';
 import MuiListItem from '../listItem/ListItem';
 import {AddItemForm} from '../../common/addItemForm/AddItemForm';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {v1} from 'uuid';
 import {Grid, ListItemIcon, Paper} from '@mui/material';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
@@ -96,14 +96,17 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
     }),
 );
 
-export default function MiniDrawer() {
+export default function Main() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    const [select, setSelect] = useState('all')
-    const folders = useSelector<AppRootStateType, FolderType[]>(state => state.folders)
     const [error, setError] = useState('')
-    const [foldersForRender, setFoldersForRender] = useState(folders)
+    const [select, setSelect] = useState('all')
+    const [searchValue, setSearchValue] = useState('')
+    const folders = useSelector<AppRootStateType, FolderType[]>(state => state.folders)
+    let foldersForRender = folders
     const dispatch = useDispatch()
+
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -123,17 +126,18 @@ export default function MiniDrawer() {
     }
 
     const onSearchSelect = (value: string) => {
-        const searchingFolders = folders.filter(el => el.title.includes(value))
-        searchingFolders.length > 0 ? setFoldersForRender(searchingFolders) : setError('No match!')
+        setSearchValue(value)
     }
-    useEffect(()=>{
-        if(select !== 'all') {
-            setFoldersForRender(folders.filter(el => el.id === select))
 
-        } else {
-            setFoldersForRender(folders)
-        }
-    },[select])
+    const searchingFolders = folders.filter(el => el.title.includes(searchValue))
+    if(select !== 'all') {
+        foldersForRender = folders.filter(el => el.id === select)
+    } else if(searchingFolders.length > 0) {
+        foldersForRender = searchingFolders
+    } else {
+        setError('No match!')
+    }
+
     return (
         <Box sx={{display: 'flex'}}>
             <CssBaseline/>
@@ -195,14 +199,13 @@ export default function MiniDrawer() {
                     justifyContent: 'center' }} container spacing={1}>
                     {foldersForRender.length && foldersForRender.map((t) => {
                         return (<Grid key={t.id} item style={{margin: '10px'}}>
-                            <Paper style={{backgroundColor: '#6495ed3b'}}>
+                            <Paper>
                                 <Folder
                                     clearSelect={onFolderSelect}
                                     filter={t.filter}
                                     id={t.id}
                                     title={t.title}
                                 /></Paper></Grid>)
-
                     })}
                 </Grid>
                 <ErrorSnackbar error={error} setError={setError}/>

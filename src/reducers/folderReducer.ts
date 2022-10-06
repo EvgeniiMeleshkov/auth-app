@@ -5,7 +5,7 @@ export type FolderType = {
 }
 export type RemoveFolderActionType = {
     type: 'REMOVE-FOLDER',
-    id: string
+    folderId: string
 }
 export type AddFolderActionType = {
     type: 'ADD-FOLDER',
@@ -21,6 +21,7 @@ export type ChangeFolderFilterActionType = {
     id: string
     filter: FilterValuesType
 }
+
 export type FoldersActionsType = RemoveFolderActionType | AddFolderActionType
     | ChangeFolderTitleActionType
     | ChangeFolderFilterActionType
@@ -36,7 +37,7 @@ export type FilterValuesType = 'all' | 'active' | 'completed';
 export const foldersReducer = (state: Array<FolderType> = initialState, action: FoldersActionsType): Array<FolderType> => {
     switch (action.type) {
         case 'REMOVE-FOLDER': {
-            return state.filter(tl => tl.id !== action.id)
+            return state.filter(tl => tl.id !== action.folderId)
         }
         case 'ADD-FOLDER': {
             return [action.folder, ...state]
@@ -61,7 +62,7 @@ export const foldersReducer = (state: Array<FolderType> = initialState, action: 
 }
 
 export const removeFolderAC = (folderId: string): RemoveFolderActionType => {
-    return {type: 'REMOVE-FOLDER', id: folderId}
+    return {type: 'REMOVE-FOLDER', folderId}
 }
 export const addFolderAC = (folder: FolderType): AddFolderActionType => {
     return {type: 'ADD-FOLDER', folder}

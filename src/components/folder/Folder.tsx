@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {addTaskAC, TasksStateType} from '../../reducers/tasksReducer';
 import {Delete} from '@mui/icons-material';
@@ -8,7 +8,6 @@ import {
     changeFolderFilterAC,
     changeFolderTitleAC,
     FilterValuesType,
-    FolderType,
     removeFolderAC
 } from '../../reducers/folderReducer';
 import {TaskStatuses} from '../../common/enums';
@@ -16,11 +15,17 @@ import {AddItemForm} from '../../common/addItemForm/AddItemForm';
 import {Task} from '../task/Task';
 import {SpanInput} from '../../common/SpanInput/SpanInput';
 
-type FolderPropsType = FolderType & {clearSelect : (id: string)=>void}
+type FolderPropsType = {
+    id: string
+    filter: FilterValuesType
+    title: string
+    clearSelect: (val: string)=>void
+}
 
-export const Folder = memo(({id, filter, title, clearSelect}: FolderPropsType) => {
+export const Folder = ({id, filter, title, clearSelect}: FolderPropsType) => {
     const dispatch = useDispatch()
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
+
 //-------------------FILTER---------------------------
     const tasksForRender = filter === 'completed'
         ? tasks[id].filter(el => el.status === TaskStatuses.Completed)
@@ -28,12 +33,12 @@ export const Folder = memo(({id, filter, title, clearSelect}: FolderPropsType) =
             ? tasks[id].filter(el => el.status !== TaskStatuses.Completed)
             : tasks[id]
 
-//----------------TODO_LOGIC-------------------------
+//----------------FOLDER_LOGIC-------------------------
 
-    const onDeleteFolderHandler = useCallback(() => {
+    const onDeleteFolderHandler = () => {
         dispatch(removeFolderAC(id))
         clearSelect('all')
-    }, [dispatch, id])
+    }
 
     const changeFolderTitle = useCallback((folderId: string, title: string) => {
         dispatch(changeFolderTitleAC(folderId, title))
@@ -89,4 +94,4 @@ export const Folder = memo(({id, filter, title, clearSelect}: FolderPropsType) =
             </div>
         </div>
     )
-})
+}
