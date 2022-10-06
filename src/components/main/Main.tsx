@@ -24,6 +24,7 @@ import {v1} from 'uuid';
 import {Grid, ListItemIcon, Paper} from '@mui/material';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import {ErrorSnackbar} from '../errorSnackbar/ErrorSnackbar';
+import {setErrorAC} from '../../reducers/appReducer';
 
 const drawerWidth = 240;
 
@@ -99,10 +100,10 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
 export default function Main() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-    let error = ''
     const [select, setSelect] = useState('all')
     const [searchValue, setSearchValue] = useState('')
     const folders = useSelector<AppRootStateType, FolderType[]>(state => state.folders)
+    //const error = useSelector<AppRootStateType, string>(state => state.app.error)
     let foldersForRender = folders
     const dispatch = useDispatch()
 
@@ -136,7 +137,7 @@ export default function Main() {
     } else if(searchingFolders.length > 0) {
         foldersForRender = searchingFolders
     } else {
-        error = 'No match!'
+        dispatch(setErrorAC('No match!'))
     }
 
     return (
@@ -209,7 +210,7 @@ export default function Main() {
                                 /></Paper></Grid>)
                     })}
                 </Grid>
-                <ErrorSnackbar error={error}/>
+                <ErrorSnackbar/>
             </Box>
         </Box>
     );

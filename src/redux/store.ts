@@ -1,12 +1,14 @@
 import {combineReducers, createStore} from 'redux';
 import {TasksActionsType, tasksReducer} from '../reducers/tasksReducer';
 import {FoldersActionsType, foldersReducer} from '../reducers/folderReducer';
+import {appReducer} from '../reducers/appReducer';
 
 // объединяю reducer-ы с помощью combineReducers,
 // структура нашего единственного объекта-состояния
 const rootReducer = combineReducers({
     tasks: tasksReducer,
-    folders: foldersReducer
+    folders: foldersReducer,
+    app: appReducer
 })
 // создаём redux
 export const store = createStore(rootReducer);
