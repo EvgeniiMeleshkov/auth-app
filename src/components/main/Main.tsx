@@ -131,7 +131,7 @@ export default function Main() {
         setSearchValue(value)
     }
 
-    const searchingFolders = folders.filter(el => el.title.includes(searchValue))
+    const searchingFolders = folders.filter(el => el.title.toLowerCase().includes(searchValue.toLowerCase()))
     if(select !== 'all') {
         foldersForRender = folders.filter(el => el.id === select)
     } else if(searchingFolders.length > 0) {
