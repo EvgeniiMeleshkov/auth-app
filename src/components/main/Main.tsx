@@ -173,7 +173,7 @@ export default function Main() {
                     <AddItemForm calBack={addFolder}/>
                     <Divider/>
                 </> : ''}
-                <ListItemIcon
+                <ListItemIcon style={{cursor: 'pointer'}}
                     onClick={() => onFolderSelect('all')}
                     sx={{
                         display: 'flex',
